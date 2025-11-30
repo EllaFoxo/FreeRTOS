@@ -1,0 +1,1 @@
+option('board', type : 'string', value : 'TOOL1RR', description : 'Board configuration')
