@@ -15,21 +15,22 @@ endif
 
 includes = ['src/include']
 
-sources = [
-  'src/croutine.c',
-  'src/event_groups.c',
-  'src/list.c',
-  'src/queue.c',
-  'src/stream_buffer.c',
-  'src/tasks.c',
-  'src/timers.c',
-  'src/portable/Common/mpu_wrappers_v2.c',
-  'src/portable/Common/mpu_wrappers.c',
-]
+if build_machine.system() == 'windows'
+  g = run_command('scripts\glob.bat', check : false)
+  source_globber = find_program('scripts\glob.bat')
+elif build_machine.system() == 'darwin'
+  g = run_command('scripts/glob.sh', check : false)
+  source_globber = find_program('scripts/glob_darwin.sh')
+else
+  g = run_command('scripts/glob.sh', check : false)
+  source_globber = find_program('scripts/glob.sh')
+endif
+
+newline = '''
+'''
 
 if mcu == 'ATSAME51G19A'
   includes += ['src/portable/GCC/ARM_CM4F']
-  sources += []
 
   add_project_arguments(
     '-D__SAME51G19A__',
@@ -55,7 +56,6 @@ endif
 
 if get_option('mcu') == 'ATSAME51G19A'
   includes += ['src/portable/GCC/ARM_CM4F']
-  sources += []
 
   add_project_arguments(
     '-D__SAME51G19A__',
@@ -78,6 +78,13 @@ if get_option('mcu') == 'ATSAME51G19A'
     language : 'c'
   )
 endif
+
+sources = g.stdout().strip().split(newline)
+message('=== Sources ===')
+foreach s : sources
+  message(s)
+endforeach
+message('===============')
 
 freertos = static_library(
   'FreeRTOS',
