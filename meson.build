@@ -52,13 +52,11 @@ if mcu == 'ATSAME51G19A'
     '-fdump-rtl-expand',
     language : 'c'
   )
-endif
-
-if get_option('mcu') == 'ATSAME51G19A'
+elif mcu == 'ATSAME51N19A'
   includes += ['src/portable/GCC/ARM_CM4F']
 
   add_project_arguments(
-    '-D__SAME51G19A__',
+    '-D__SAME51N19A__',
     '-Dnoexcept=',
     '-c',
     '-mcpu=cortex-m4',
@@ -77,6 +75,27 @@ if get_option('mcu') == 'ATSAME51G19A'
     '-fdump-rtl-expand',
     language : 'c'
   )
+elif mcu == 'ATSAMC21G18A'
+  includes += ['src/portable/GCC/ARM_CM0']
+
+  add_project_arguments(
+    '-D__SAMC21G18A__',
+    '-Dnoexcept=',
+    '-c',
+    '-mcpu=cortex-m0plus',
+    '-mthumb',
+    '-fno-math-errno',
+    '-ffunction-sections',
+    '-fdata-sections',
+    '-nostdlib',
+    '-Wundef',
+    '-Wdouble-promotion',
+    '-fsingle-precision-constant',
+    '-Wa,-ahl=$*.s',
+    language : 'c'
+  )
+else
+  error('Target MCU not found:', mcu)
 endif
 
 sources = g.stdout().strip().split(newline)
